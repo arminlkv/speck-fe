@@ -1,14 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -23,18 +16,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
-
-// {
-//   "compilerOptions": {
-//     "module": "ESNext",
-//     "moduleResolution": "Bundler",
-//     "skipLibCheck": true,
-//     "paths": {
-//       "@/*": ["./src/*"]
-//     }
-//   }
-// }
