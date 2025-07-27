@@ -5,7 +5,7 @@ import React, {
   useState,
   useRef,
 } from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Button, Text, useDisclosure } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import CalendarToolbar from "../components/Toolbar/toolbar";
 import EventList from "../components/EventList/EventList";
@@ -20,8 +20,12 @@ import { GroupBy } from "../components/Toolbar/types";
 import { dateFormat } from "../constants/constants";
 import { Toaster, toaster } from "../components/ui/toaster";
 import { GoogleCalendarEvent } from "../components/EventList/types";
+import NewEventModal from "../components/NewEventModal/NewEventModal";
+import CalendarApi from "../apis/CalendarApi";
 
 const Home = () => {
+  const { open, onOpen, onClose } = useDisclosure();
+
   const [allEvents, setAllEvents] = useState<GoogleCalendarEvent[]>([]);
   const [events, setEvents] = useState<GoogleCalendarEvent[]>([]);
   const [groupBy, setGroupBy] = useState<GroupBy>("day");
@@ -96,6 +100,29 @@ const Home = () => {
     }
   }, []);
 
+  const handleCreateNewEvent = (newEvent: {
+    name: string;
+    start: string;
+    end: string;
+  }) => {
+    CalendarApi.createEvent({
+      start: newEvent.start,
+      end: newEvent.end,
+      summary: newEvent.name,
+    })
+      .then((response) => {
+        console.log("Event created successfully:", response.data);
+
+        const newEvents = [...allEvents, response.data];
+        setAllEvents(newEvents);
+        setEvents(newEvents);
+      })
+      .catch((error) => {
+        toaster.error("Failed to create event");
+        console.error("Error creating event:", error);
+      });
+  };
+
   return (
     <Box p={4}>
       <Toaster />
@@ -122,6 +149,18 @@ const Home = () => {
           ))
         )}
       </Box>
+
+      <Box mt={8} textAlign="center">
+        <Button colorScheme="blue" onClick={onOpen}>
+          New Event
+        </Button>
+      </Box>
+
+      <NewEventModal
+        isOpen={open}
+        onClose={onClose}
+        onCreate={handleCreateNewEvent}
+      />
     </Box>
   );
 };

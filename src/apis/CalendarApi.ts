@@ -20,6 +20,18 @@ class CalendarApi {
       }
     );
   }
+
+  static async createEvent(event: {
+    start: string;
+    end: string;
+    summary: string;
+  }): Promise<AxiosResponse<any>> {
+    return await axiosClient.post("/api/user/calendar/create", event, {
+      headers: {
+        "x-speck-session": JSON.parse(Cookies.get("session") || ""),
+      },
+    });
+  }
 }
 
 export default CalendarApi;
