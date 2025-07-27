@@ -84,7 +84,7 @@ const Home = () => {
     if (hasRun.current) return; // Prevent running this logic more than once since we are not using strict mode
     hasRun.current = true;
 
-    const session = JSON.parse(Cookies.get("session") || "");
+    const session = JSON.parse(Cookies.get("session") || "{}");
     if (!session) {
       // No session found, redirect to login
       window.location.replace("/login");
