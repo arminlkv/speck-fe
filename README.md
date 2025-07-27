@@ -2,6 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Initial setup
+
+In order to run the project please create .env file in the root of the application using guide from .env.example
+Once created run `nvm use`
+If you do not have node 22.17.1 please `run nvm install`
+After that you can run npm start and visit `http://localhost:3000`
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -13,11 +20,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
 
