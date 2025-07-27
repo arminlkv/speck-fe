@@ -105,16 +105,22 @@ const Home = () => {
       />
 
       <Box mt={8}>
-        {Object.entries(groupedEvents).map(([groupKey, eventsInGroup]) => (
-          <Box key={groupKey} mb={6}>
-            <Text fontWeight="bold" fontSize="lg" mb={2}>
-              {groupBy === "day"
-                ? moment(groupKey).format("dddd, MMM D, YYYY")
-                : formatGroupWeekKey(groupKey)}
-            </Text>
-            <EventList events={eventsInGroup} />
-          </Box>
-        ))}
+        {events.length === 0 ? (
+          <Text p={4} color="gray.500" fontStyle="italic" textAlign="center">
+            No events on the selected dates
+          </Text>
+        ) : (
+          Object.entries(groupedEvents).map(([groupKey, eventsInGroup]) => (
+            <Box key={groupKey} mb={6}>
+              <Text fontWeight="bold" fontSize="lg" mb={2}>
+                {groupBy === "day"
+                  ? moment(groupKey).format("dddd, MMM D, YYYY")
+                  : formatGroupWeekKey(groupKey)}
+              </Text>
+              <EventList events={eventsInGroup} />
+            </Box>
+          ))
+        )}
       </Box>
     </Box>
   );
