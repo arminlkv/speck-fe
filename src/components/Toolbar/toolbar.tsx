@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, ButtonGroup, Flex, Text } from "@chakra-ui/react";
 import {
   RiArrowGoForwardFill,
   RiArrowGoBackFill,
   RiRepeat2Fill,
 } from "react-icons/ri";
-
 import moment, { Moment } from "moment";
 import { RangeOption, ToolbarProps } from "./types";
 import { Tooltip } from "../ui/tooltip";
@@ -27,7 +26,6 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
 
   const handleRangeChange = (newRange: RangeOption) => {
     setRange(newRange);
-
     onRangeChange({
       startDate: startDate.toISOString(),
       endDate: moment(startDate)
@@ -72,67 +70,92 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
 
   return (
     <Flex
-      direction={{ base: "column", md: "row" }}
-      align={{ base: "stretch", md: "center" }}
+      align="center"
       justify="space-between"
-      gap={4}
       p={4}
       bg="gray.50"
       borderRadius="md"
       boxShadow="sm"
-      wrap="wrap"
+      wrap="nowrap"
+      gap={4}
     >
-      {/* Date Range Display */}
-      <Box textAlign={{ base: "left", md: "center" }}>
-        <Text fontWeight="bold">Event Range</Text>
-        <Text fontSize="sm" color="gray.600">
+      {/* Left - Dates */}
+      <Box flex="0 0 auto" textAlign="left" minWidth="140px">
+        <Text fontWeight="bold" lineHeight="1.2">
+          Event Range
+        </Text>
+        <Text fontSize="sm" color="gray.600" mb={2}>
           {startDate.format("MMM D")} → {endDate.format("MMM D, YYYY")}
         </Text>
       </Box>
 
-      {/* Range Buttons */}
-      <ButtonGroup attached>
-        {[1, 7, 30].map((val) => (
-          <Button
-            key={val}
-            onClick={() => handleRangeChange(val as RangeOption)}
-            colorScheme={range === val ? "blue" : undefined}
-            variant={range === val ? "surface" : "solid"}
-            border={range !== val ? "1px solid" : "none"}
-          >
-            {val} Day{val > 1 ? "s" : ""}
-          </Button>
-        ))}
-      </ButtonGroup>
+      {/* Center - Controls */}
+      <Flex
+        flex="1 1 auto"
+        align="center"
+        justify="center"
+        gap={4}
+        flexWrap="nowrap"
+      >
+        {/* Range Buttons */}
+        <ButtonGroup attached>
+          {[1, 7, 30].map((val) => (
+            <Button
+              key={val}
+              onClick={() => handleRangeChange(val as RangeOption)}
+              colorScheme={range === val ? "blue" : undefined}
+              variant={range === val ? "surface" : "solid"}
+              border={range !== val ? "1px solid" : "none"}
+              minW="60px"
+            >
+              {val} Day{val > 1 ? "s" : ""}
+            </Button>
+          ))}
+        </ButtonGroup>
 
-      {/* Navigation Arrows */}
-      <Flex gap={2}>
-        <Tooltip content={`Previous ${range} days`}>
-          <Button
-            onClick={() => navigate("prev")}
-            disabled={moment(startDate)
-              .subtract(range, "days")
-              .isBefore(minDate)}
-          >
-            <RiArrowGoBackFill />
-          </Button>
-        </Tooltip>
-        <Tooltip content={`Next ${range} days`}>
-          <Button
-            onClick={() => navigate("next")}
-            disabled={moment(startDate).add(range, "days").isAfter(maxDate)}
-          >
-            <RiArrowGoForwardFill />
-          </Button>
-        </Tooltip>
+        {/* Navigation Arrows */}
+        <Flex gap={2} align="center">
+          <Tooltip content={`Previous ${range} days`}>
+            <Button
+              onClick={() => navigate("prev")}
+              disabled={moment(startDate)
+                .subtract(range, "days")
+                .isBefore(minDate)}
+              size="sm"
+            >
+              <RiArrowGoBackFill />
+            </Button>
+          </Tooltip>
+          <Tooltip content={`Next ${range} days`}>
+            <Button
+              onClick={() => navigate("next")}
+              disabled={moment(startDate).add(range, "days").isAfter(maxDate)}
+              size="sm"
+            >
+              <RiArrowGoForwardFill />
+            </Button>
+          </Tooltip>
+        </Flex>
+
+        {/* Refresh */}
+        <Button
+          onClick={handleRefresh}
+          colorScheme="blue"
+          variant="solid"
+          size="sm"
+          border="1px solid"
+          ml={2}
+          minW="130px"
+        >
+          <RiRepeat2Fill style={{ marginRight: 6 }} />
+          Refresh Events
+        </Button>
       </Flex>
 
-      {/* Refresh Button */}
-      <Button onClick={handleRefresh} colorScheme="blue" border={"1px solid"}>
-        <RiRepeat2Fill />
-        Refresh Events
-      </Button>
-      <GoogleProfile />
+      {/* Right - Avatar */}
+      <Box flex="0 0 auto" ml="auto">
+        <GoogleProfile />
+      </Box>
     </Flex>
   );
 };
