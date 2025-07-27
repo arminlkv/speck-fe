@@ -1,0 +1,9 @@
+/* Required for backdropFilter to work on some setups */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
+}

@@ -36,9 +36,18 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
                 borderWidth="1px"
                 borderRadius="md"
                 boxShadow="sm"
+                _hover={{
+                  transform: "scale(1.04)",
+                  bg: "white.400",
+                  backdropBlur: "20px",
+                  backdropFilter: "blur(10px)",
+                  shadow: "lg",
+                }}
+                transition="all 0.2s ease"
+                cursor={"pointer"}
               >
                 <Text fontWeight="bold">{event.summary || "No Title"}</Text>
-                <Text fontSize="sm" color="gray.600">
+                <Text fontSize="sm" color="white.600">
                   {moment(event.start).format("HH:mm")} –{" "}
                   {moment(event.end).format("HH:mm")}
                 </Text>

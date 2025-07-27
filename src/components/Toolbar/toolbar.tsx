@@ -73,7 +73,7 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
       align="center"
       justify="space-between"
       p={4}
-      bg="gray.50"
+      bg={"#1a2e38"}
       borderRadius="md"
       boxShadow="sm"
       wrap="nowrap"
@@ -81,10 +81,10 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
     >
       {/* Left - Dates */}
       <Box flex="0 0 auto" textAlign="left" minWidth="140px">
-        <Text fontWeight="bold" lineHeight="1.2">
+        <Text fontWeight="bold" lineHeight="1.2" color={"white"}>
           Event Range
         </Text>
-        <Text fontSize="sm" color="gray.600" mb={2}>
+        <Text fontSize="sm" color="white.600" mb={2}>
           {startDate.format("MMM D")} → {endDate.format("MMM D, YYYY")}
         </Text>
       </Box>
@@ -103,7 +103,7 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
             <Button
               key={val}
               onClick={() => handleRangeChange(val as RangeOption)}
-              colorScheme={range === val ? "blue" : undefined}
+              bg={range === val ? "#1a1a1a" : "#888888"}
               variant={range === val ? "surface" : "solid"}
               border={range !== val ? "1px solid" : "none"}
               minW="60px"
@@ -121,6 +121,7 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
               disabled={moment(startDate)
                 .subtract(range, "days")
                 .isBefore(minDate)}
+              bg={"#888888"}
               size="sm"
             >
               <RiArrowGoBackFill />
@@ -131,6 +132,7 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
               onClick={() => navigate("next")}
               disabled={moment(startDate).add(range, "days").isAfter(maxDate)}
               size="sm"
+              bg="#888888"
             >
               <RiArrowGoForwardFill />
             </Button>
@@ -140,7 +142,7 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({
         {/* Refresh */}
         <Button
           onClick={handleRefresh}
-          colorScheme="blue"
+          bg="#888888"
           variant="solid"
           size="sm"
           border="1px solid"

@@ -22,8 +22,9 @@ const GoogleProfile = () => {
           src={user.picture}
           name={user.name}
           borderRadius="50%"
-          width={25}
-          height={25}
+          width={35}
+          height={35}
+          ml={10}
         />
       </HStack>
       <MenuList

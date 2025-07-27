@@ -5,7 +5,7 @@ import React, {
   useState,
   useRef,
 } from "react";
-import { Box, Button, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Text, useDisclosure, Flex } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import CalendarToolbar from "../components/Toolbar/toolbar";
 import EventList from "../components/EventList/EventList";
@@ -123,45 +123,77 @@ const Home = () => {
       });
   };
 
+  useEffect(() => {
+    if (open) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [open]);
+
   return (
-    <Box p={4}>
-      <Toaster />
-      <CalendarToolbar
-        onRangeChange={handleRangeChange}
-        onRefresh={onRefresh}
-      />
+    <Flex
+      h="100vh"
+      alignItems="center"
+      justifyContent="center"
+      bg="linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)"
+    >
+      <Flex
+        top={30}
+        position={"absolute"}
+        direction="column"
+        maxH="95%"
+        overflowY="auto"
+        w="100%"
+        maxW="960px"
+        bg="linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)"
+        backdropFilter="blur(10px)"
+        borderRadius={12}
+        boxShadow="2xl"
+        p={4}
+      >
+        <Box p={4}>
+          <Toaster />
+          <CalendarToolbar
+            onRangeChange={handleRangeChange}
+            onRefresh={onRefresh}
+          />
 
-      <Box mt={8}>
-        {events.length === 0 ? (
-          <Text p={4} color="gray.500" fontStyle="italic" textAlign="center">
-            No events on the selected dates
-          </Text>
-        ) : (
-          Object.entries(groupedEvents).map(([groupKey, eventsInGroup]) => (
-            <Box key={groupKey} mb={6}>
-              <Text fontWeight="bold" fontSize="lg" mb={2}>
-                {groupBy === "day"
-                  ? moment(groupKey).format("dddd, MMM D, YYYY")
-                  : formatGroupWeekKey(groupKey)}
+          <Box mt={8}>
+            {events.length === 0 ? (
+              <Text
+                p={4}
+                color="gray.500"
+                fontStyle="italic"
+                textAlign="center"
+              >
+                No events on the selected dates
               </Text>
-              <EventList events={eventsInGroup} />
-            </Box>
-          ))
-        )}
-      </Box>
+            ) : (
+              Object.entries(groupedEvents).map(([groupKey, eventsInGroup]) => (
+                <Box key={groupKey} mb={6}>
+                  <Text fontWeight="bold" fontSize="lg" mb={2}>
+                    {groupBy === "day"
+                      ? moment(groupKey).format("dddd, MMM D, YYYY")
+                      : formatGroupWeekKey(groupKey)}
+                  </Text>
+                  <EventList events={eventsInGroup} />
+                </Box>
+              ))
+            )}
+          </Box>
 
-      <Box mt={8} textAlign="center">
-        <Button colorScheme="blue" onClick={onOpen}>
-          New Event
-        </Button>
-      </Box>
-
+          <Box mt={8} textAlign="center">
+            <Button colorScheme="blue" onClick={onOpen}>
+              New Event
+            </Button>
+          </Box>
+        </Box>
+      </Flex>
       <NewEventModal
         isOpen={open}
         onClose={onClose}
         onCreate={handleCreateNewEvent}
       />
-    </Box>
+    </Flex>
   );
 };
 

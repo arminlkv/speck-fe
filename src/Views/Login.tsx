@@ -9,22 +9,35 @@ const Login = () => {
   };
 
   return (
-    <Flex h="100vh" alignItems="center" justifyContent="center" bg={"gray.100"}>
+    <Flex
+      h="100vh"
+      alignItems="center"
+      justifyContent="center"
+      bg="linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)"
+      p={4}
+    >
       <Toaster />
+
       <Flex
         flexDirection="column"
-        bg="teal.500"
+        bg="rgba(255, 255, 255, 0.15)"
+        backdropFilter="blur(10px)"
         p={12}
-        borderRadius={8}
-        boxShadow="lg"
+        borderRadius={12}
+        boxShadow="2xl"
+        border="1px solid rgba(255, 255, 255, 0.2)"
       >
         <HStack>
           <Button
-            colorPalette="teal.50"
-            variant="subtle"
+            colorScheme="whiteAlpha"
+            variant="solid"
+            bg="whiteAlpha.800"
+            _hover={{ bg: "whiteAlpha.900" }}
+            color="gray.800"
             onClick={onLoginClick}
           >
-            <RiGoogleLine /> Login with Google
+            <RiGoogleLine />
+            Login with Google
           </Button>
         </HStack>
       </Flex>
