@@ -1,23 +1,11 @@
 import { Flex, Button, HStack } from "@chakra-ui/react";
 import { RiGoogleLine } from "react-icons/ri";
-import LoginApi from "../apis/LoginApi";
 import { Toaster, toaster } from "../components/ui/toaster";
+import { handleLogin } from "../utils/helpers";
 
 const Login = () => {
-  const handleLogin = () => {
-    LoginApi.login()
-      .then(({ data }) => {
-        localStorage.setItem("session", data.session);
-        window.location.replace(data.redirect_uri);
-      })
-      .catch((error) => {
-        toaster.create({
-          type: "error",
-          title: "Login failed",
-          description: error.response?.data?.message || "An error occurred",
-          duration: 5000,
-        });
-      });
+  const onLoginClick = () => {
+    handleLogin(toaster);
   };
 
   return (
@@ -31,7 +19,11 @@ const Login = () => {
         boxShadow="lg"
       >
         <HStack>
-          <Button colorPalette="teal.50" variant="subtle" onClick={handleLogin}>
+          <Button
+            colorPalette="teal.50"
+            variant="subtle"
+            onClick={onLoginClick}
+          >
             <RiGoogleLine /> Login with Google
           </Button>
         </HStack>

@@ -1,13 +1,31 @@
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
+import { Box, Text } from "@chakra-ui/react";
+import Cookies from "js-cookie";
 import CalendarToolbar from "../components/Toolbar/toolbar";
-import { GroupBy } from "@/components/Toolbar/types";
-import { Box } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
+import EventList from "../components/EventList/EventList";
+import moment from "moment";
+import {
+  filterEvents,
+  formatGroupWeekKey,
+  handleEventsReSync,
+  handleSessionCheck,
+} from "../utils/helpers";
+import { GroupBy } from "../components/Toolbar/types";
+import { dateFormat } from "../constants/constants";
+import { Toaster, toaster } from "../components/ui/toaster";
+import { GoogleCalendarEvent } from "../components/EventList/types";
 
 const Home = () => {
-  const [startDate, setStartDate] = useState<string>();
-  const [endDate, setEndDate] = useState<string>();
+  const [allEvents, setAllEvents] = useState<GoogleCalendarEvent[]>([]);
+  const [events, setEvents] = useState<GoogleCalendarEvent[]>([]);
   const [groupBy, setGroupBy] = useState<GroupBy>("day");
-
+  const hasRun = useRef(false);
   const handleRangeChange = useCallback(
     ({
       startDate,
@@ -18,21 +36,85 @@ const Home = () => {
       endDate: string;
       groupBy: GroupBy;
     }) => {
-      setStartDate(startDate);
-      setEndDate(endDate);
+      setEvents(filterEvents(allEvents, startDate, endDate));
+
       setGroupBy(groupBy);
     },
-    []
+    [allEvents]
   );
 
+  const groupedEvents = useMemo(() => {
+    const groupEvents = (
+      events: GoogleCalendarEvent[],
+      groupBy: GroupBy
+    ): Record<string, GoogleCalendarEvent[]> => {
+      const grouped: Record<string, GoogleCalendarEvent[]> = {};
+
+      events.forEach((event) => {
+        const startMoment = moment(event.start);
+
+        let key = "";
+        if (groupBy === "day") {
+          key = startMoment.format(dateFormat); // e.g. 2025-07-26
+        } else {
+          // group by ISO week year and week number e.g. 2025-W31
+          key = startMoment.format("GGGG-[W]WW");
+        }
+
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(event);
+      });
+
+      return grouped;
+    };
+
+    return groupEvents(events, groupBy);
+  }, [events, groupBy]);
+
+  const onRefresh = () => {
+    handleEventsReSync(toaster, setAllEvents);
+  };
+
+  useEffect(() => {
+    // Check if user is already logged in
+    if (hasRun.current) return; // Prevent running this logic more than once since we are not using strict mode
+    hasRun.current = true;
+
+    const session = JSON.parse(Cookies.get("session") || "");
+    if (!session) {
+      // No session found, redirect to login
+      window.location.replace("/login");
+
+      return;
+    }
+
+    if (session) {
+      // Try to auth with the session
+      handleSessionCheck(toaster).then(() => {
+        handleEventsReSync(toaster, setAllEvents);
+      });
+    }
+  }, []);
+
   return (
-    <Box>
-      <CalendarToolbar onRangeChange={handleRangeChange} />
-      <Box mt={4} p={4} border="1px solid #ccc" borderRadius="md">
-        <strong>Current Range:</strong>
-        <p>Start: {startDate}</p>
-        <p>End: {endDate}</p>
-        <p>Group By: {groupBy}</p>
+    <Box p={4}>
+      <Toaster />
+      <CalendarToolbar
+        onRangeChange={handleRangeChange}
+        onRefresh={onRefresh}
+      />
+
+      <Box mt={8}>
+        {Object.entries(groupedEvents).map(([groupKey, eventsInGroup]) => (
+          <Box key={groupKey} mb={6}>
+            <Text fontWeight="bold" fontSize="lg" mb={2}>
+              {groupBy === "day"
+                ? moment(groupKey).format("dddd, MMM D, YYYY")
+                : formatGroupWeekKey(groupKey)}
+            </Text>
+            <EventList events={eventsInGroup} />
+          </Box>
+        ))}
       </Box>
     </Box>
   );

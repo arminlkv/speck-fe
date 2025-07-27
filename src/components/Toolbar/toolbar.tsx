@@ -1,14 +1,22 @@
 import { useState, useEffect } from "react";
 import { Box, Button, ButtonGroup, Flex, Text } from "@chakra-ui/react";
-import { RiArrowGoForwardFill, RiArrowGoBackFill } from "react-icons/ri";
+import {
+  RiArrowGoForwardFill,
+  RiArrowGoBackFill,
+  RiRepeat2Fill,
+} from "react-icons/ri";
 
 import moment, { Moment } from "moment";
 import { RangeOption, ToolbarProps } from "./types";
 import { Tooltip } from "../ui/tooltip";
+import GoogleProfile from "../UserProfile/UserProfile";
 
 const MAX_RANGE_MONTHS = 3;
 
-const CalendarToolbar: React.FC<ToolbarProps> = ({ onRangeChange }) => {
+const CalendarToolbar: React.FC<ToolbarProps> = ({
+  onRangeChange,
+  onRefresh,
+}) => {
   const [range, setRange] = useState<RangeOption>(7);
   const [startDate, setStartDate] = useState<Moment>(moment());
 
@@ -19,17 +27,14 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({ onRangeChange }) => {
 
   const handleRangeChange = (newRange: RangeOption) => {
     setRange(newRange);
-  };
 
-  const navigate = (direction: "prev" | "next") => {
-    const delta = direction === "prev" ? -range : range;
-    const newStart = moment(startDate).add(delta, "days");
-    const newEnd = moment(newStart).add(range - 1, "days");
-
-    // Enforce 3-month bounds
-    if (newStart.isBefore(minDate) || newEnd.isAfter(maxDate)) return;
-
-    setStartDate(newStart);
+    onRangeChange({
+      startDate: startDate.toISOString(),
+      endDate: moment(startDate)
+        .add(newRange - 1, "days")
+        .toISOString(),
+      groupBy: newRange === 30 ? "week" : "day",
+    });
   };
 
   useEffect(() => {
@@ -40,24 +45,52 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({ onRangeChange }) => {
         groupBy: range === 30 ? "week" : "day",
       });
     }
-  }, [startDate, range, onRangeChange, endDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRangeChange]);
+
+  const navigate = (direction: "prev" | "next") => {
+    const delta = direction === "prev" ? -range : range;
+    const newStart = moment(startDate).add(delta, "days");
+    const newEnd = moment(newStart).add(range - 1, "days");
+
+    // Enforce 3-month bounds
+    if (newStart.isBefore(minDate) || newEnd.isAfter(maxDate)) return;
+
+    setStartDate(newStart);
+    onRangeChange({
+      startDate: newStart.toISOString(),
+      endDate: moment(newStart)
+        .add(range - 1, "days")
+        .toISOString(),
+      groupBy: range === 30 ? "week" : "day",
+    });
+  };
+
+  const handleRefresh = (): void => {
+    onRefresh();
+  };
 
   return (
     <Flex
-      align="center"
+      direction={{ base: "column", md: "row" }}
+      align={{ base: "stretch", md: "center" }}
       justify="space-between"
+      gap={4}
       p={4}
       bg="gray.50"
       borderRadius="md"
       boxShadow="sm"
+      wrap="wrap"
     >
-      <Box textAlign="center">
+      {/* Date Range Display */}
+      <Box textAlign={{ base: "left", md: "center" }}>
         <Text fontWeight="bold">Event Range</Text>
         <Text fontSize="sm" color="gray.600">
           {startDate.format("MMM D")} → {endDate.format("MMM D, YYYY")}
         </Text>
       </Box>
 
+      {/* Range Buttons */}
       <ButtonGroup attached>
         {[1, 7, 30].map((val) => (
           <Button
@@ -71,10 +104,11 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({ onRangeChange }) => {
           </Button>
         ))}
       </ButtonGroup>
-      <Flex align="center" gap={2}>
+
+      {/* Navigation Arrows */}
+      <Flex gap={2}>
         <Tooltip content={`Previous ${range} days`}>
           <Button
-            aria-label="Previous"
             onClick={() => navigate("prev")}
             disabled={moment(startDate)
               .subtract(range, "days")
@@ -85,7 +119,6 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({ onRangeChange }) => {
         </Tooltip>
         <Tooltip content={`Next ${range} days`}>
           <Button
-            aria-label="Next"
             onClick={() => navigate("next")}
             disabled={moment(startDate).add(range, "days").isAfter(maxDate)}
           >
@@ -93,6 +126,13 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({ onRangeChange }) => {
           </Button>
         </Tooltip>
       </Flex>
+
+      {/* Refresh Button */}
+      <Button onClick={handleRefresh} colorScheme="blue" border={"1px solid"}>
+        <RiRepeat2Fill />
+        Refresh Events
+      </Button>
+      <GoogleProfile />
     </Flex>
   );
 };
